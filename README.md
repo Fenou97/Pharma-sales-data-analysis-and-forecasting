@@ -30,7 +30,7 @@ The dataset includes daily sales quantities from 2014 to 2019 for several drug c
 
 - ### Data Summary and Data Distribution
 
-In PowerBI, Data profiling is used to examining the data and collect statistics informative summaries about it. It helped us to understand the  data structure, to assess data quality, and evaluate data distribution and summary statistics. 
+In PowerBI, Data profiling is used to examine the data and collect statistics informative summaries about it. It helped us to understand the  data structure, to assess data quality, and evaluate data distribution and summary statistics. 
 
 *M01ABsort (Sales volume of anti-inflammatory and antirheumatic products, non-steroids, Acetic acid derivatives and related)*
 
