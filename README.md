@@ -52,5 +52,7 @@ In PowerBI, Data profiling is used to examine the data and collect statistics in
 
 ![EDA 5](https://github.com/user-attachments/assets/a93604d5-a22a-4e08-9692-abf384c9680f)
 
+We are analyzing historical sales values (sums) for different drug categories across years (2014–2019), without using any external variables. This is purely time-driven pattern recognition.
+
 
 
