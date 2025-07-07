@@ -54,5 +54,10 @@ In PowerBI, Data profiling is used to examine the data and collect statistics in
 
 We are analyzing historical sales values (sums) for different drug categories across years (2014–2019), without using any external variables. This is purely time-driven pattern recognition.
 
-
-
+|Drug Class|Pattern|Seasonality (visible?)|
+|----------|-------|----------------------|
+|N05C - Psycholeptics drugs, Hypnotics and sedatives drugs|Fluctuating decline|Not clear|
+|R03 - Drugs for obstructive airway diseases|Rising with dip in 2019|Not obvious|
+|R06 - Antihistamines for systemic use|Rising with clear 2018 peak|Possible seasonal peak in allergy years|
+|N05B - Psycholeptics drugs, Anxiolytic drugs|Steady decline|No seasonality|
+|N02BE- Other analgesics and antipyretics, Pyrazolones and Anilides|Two similar plots, fluctuating with peaks in 2016|Possibly seasonal or outbreak-driven|
