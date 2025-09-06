@@ -5,7 +5,7 @@
 - [Research Questions](#research-questions)
 - [Data Sources](#data-sources)
 - [Tools](#tools)
-
+- [Time series forecasting](#Time-series-forecasting)
 
 ## Project Overview
 
@@ -75,3 +75,48 @@ In contrast, **Prophet**, developed by Facebook, is a decomposition-based model 
 |R03 (Airway Diseases)|Rising trend with irregular spikes|Prophet|Robust to sudden shocks/outbreaks; can include external regressors (e.g., flu seasons)|
 |R06 (Antihistamines)|Strong seasonal allergy pattern|SARIMA / Prophet|Both capture seasonality well; Prophet easier if adding holiday/weather regressors|
 |N02BE (Analgesics/Antipyretics)|Seasonal with outbreak-driven peaks|Prophet|Handles irregular spikes and events better; ARIMA struggles with sudden jumps|
+
+### Data Manipulation
+- Properly convert the datum column into a Date object
+```R
+#Load the data
+Pharma<-read.csv("C:/documents/Portoflio/pharma sales analysis and forecasting/salesdaily.csv", stringsAsFactors = FALSE)
+View(Pharma)
+# Convert date because date is in m/d/yyyy format
+Pharma <- Pharma %>%
+  mutate(datum = mdy(datum)) 
+```
+![Pharma Data](https://github.com/user-attachments/assets/091a0e93-42a0-4279-93c3-bdffb7878ca6)
+![Date Object](https://github.com/user-attachments/assets/b2cce5f2-75aa-4336-92b9-d3a0c963ebb7)
+
+- The  data is wide (many columns for different variables or categories). So, we convered it to long format (one column for variable names, one for values).
+```R
+Pharma_long <- Pharma %>%
+  pivot_longer(cols = c(M01AB, M01AE, N02BA, N02BE, N05B, N05C, R03, R06),
+               names_to = "DrugClass",
+               values_to = "UnitsSold")
+View (Pharma_long)
+```
+![Long Format data](https://github.com/user-attachments/assets/8126d82b-6b3d-4b1d-98ec-160e0d701788)
+
+- **Aggregation**
+
+The raw data is daily. Seasonality is usually observed over regular intervals like months, weeks, or quarters. We will combine all the daily observations in a month into a single value, which will make patterns easier to see. Without aggregation, the data will be too “noisy” to see trends or seasonal patterns.
+
+```R
+Pharma <- Pharma%>%
+  mutate(total_sales = M01AB + M01AE + N02BA + N02BE + N05B + N05C + R03 + R06)
+```
+![Aggregate](https://github.com/user-attachments/assets/cf127e61-da58-4a89-80e9-87ffd09bbb40)
+
+- **Convert to a time series (ts) object**
+  
+R’s time series functions (like decompose(), forecast()) require a ts object which will mark the data as ordered in time and tells R the frequency (12 for monthly, 4 for quarterly).
+
+```R
+# Create time series object
+ts_data <- ts(Pharma$total_sales, start = c(2014, 1), frequency = 365)
+#Visualize
+autoplot(ts_data) + ggtitle("Daily Total Sales") + ylab("Sales")
+```
+![Time Series](https://github.com/user-attachments/assets/7f604d35-73fb-41ff-bdb8-6276fed8b5bc)
