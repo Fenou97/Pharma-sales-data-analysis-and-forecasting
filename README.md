@@ -61,3 +61,17 @@ We are analyzing historical sales values (sums) for different drug categories ac
 |R06 - Antihistamines for systemic use|Rising with clear 2018 peak|Possible seasonal peak in allergy years|
 |N05B - Psycholeptics drugs, Anxiolytic drugs|Steady decline|No seasonality|
 |N02BE- Other analgesics and antipyretics, Pyrazolones and Anilides|Two similar plots, fluctuating with peaks in 2016|Possibly seasonal or outbreak-driven|
+
+### Time series forecasting
+
+There are many different methods and approaches to time-series forecasting. **ARIMA** (AutoRegressive Integrated Moving Average) is a classical statistical model that forecasts time series data by combining past values, differencing to handle trends, and past errors. Its seasonal extension **(SARIMA)** is powerful for capturing recurring patterns like yearly or weekly seasonality. ARIMA works best on stable, well-structured series with clear trend or seasonal behavior, but it requires the data to be stationary and is less flexible when irregular events or sudden shifts occur.
+
+In contrast, **Prophet**, developed by Facebook, is a decomposition-based model that represents time series as the sum of trend, seasonality, and holiday effects. It is more robust to missing data, outliers, and abrupt changes, while also making it easy to add external regressors such as holidays or outbreak indicators. Prophet excels when demand is influenced by strong seasonal patterns and external events, though it may be less precise than ARIMA for purely statistical, stable series.
+
+|Drug Class|Observed Pattern|Better Model|Reason|
+|----------|----------------|------------|------|
+|N05B (Anxiolytics)|Steady decline, no clear seasonality|ARIMA / ETS|Trend-only series; ARIMA handles smooth declines better than Prophet|
+|N05C (Hypnotics/Sedatives)|Fluctuating decline, weak seasonality|ARIMA|Mostly trend-driven, ARIMA captures trend shifts; Prophet adds little value here|
+|R03 (Airway Diseases)|Rising trend with irregular spikes|Prophet|Robust to sudden shocks/outbreaks; can include external regressors (e.g., flu seasons)|
+|R06 (Antihistamines)|Strong seasonal allergy pattern|SARIMA / Prophet|Both capture seasonality well; Prophet easier if adding holiday/weather regressors|
+|N02BE (Analgesics/Antipyretics)|Seasonal with outbreak-driven peaks|Prophet|Handles irregular spikes and events better; ARIMA struggles with sudden jumps|
