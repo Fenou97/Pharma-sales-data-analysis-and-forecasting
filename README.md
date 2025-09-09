@@ -77,7 +77,7 @@ In contrast, **Prophet**, developed by Facebook, is a decomposition-based model 
 |N02BE (Analgesics/Antipyretics)|Seasonal with outbreak-driven peaks|Prophet|Handles irregular spikes and events better; ARIMA struggles with sudden jumps|
 
 ### Data Manipulation
-- Properly convert the datum column into a Date object
+- **Properly convert the datum column into a Date object**
 ```R
 #Load the data
 Pharma<-read.csv("C:/documents/Portoflio/pharma sales analysis and forecasting/salesdaily.csv", stringsAsFactors = FALSE)
@@ -98,6 +98,31 @@ Pharma_long <- Pharma %>%
 View (Pharma_long)
 ```
 ![Long Format data](https://github.com/user-attachments/assets/8126d82b-6b3d-4b1d-98ec-160e0d701788)
+
+- **Exploratory**
+  *Average Sales by Weekday for Each Product*
+```R
+ggplot(Pharma_long, aes(x = Weekday.Name, y = DrugClass, fill = DrugClass)) +
+  stat_summary(fun = mean, geom = "bar", position = "dodge") +
+  labs(title = "Average Sales by Weekday for Each Product",
+       x = "Weekday",
+       y = "Average Sales") +
+  theme_minimal()
+```
+![Weekday sale](https://github.com/user-attachments/assets/dec15df6-d84c-4986-b33d-2bb211ee9501)
+
+*Average Monthly Sales by Product*
+ *Average Sales by Weekday for Each Product*
+```R
+gplot(Pharma_long, aes(x = factor(Month), y = DrugClass, fill = DrugClass)) +
+  stat_summary(fun = mean, geom = "bar", position = "dodge") +
+  labs(title = "Average Monthly Sales by Product",
+       x = "Month",
+       y = "Average Sales") +
+  theme_minimal()
+```
+![Average sale by nonth](https://github.com/user-attachments/assets/ea8cf589-1044-4f15-919c-3000e6a6c4f6)
+
 
 - **Aggregation**
 
@@ -120,3 +145,20 @@ ts_data <- ts(Pharma$total_sales, start = c(2014, 1), frequency = 365)
 autoplot(ts_data) + ggtitle("Daily Total Sales") + ylab("Sales")
 ```
 ![Time Series](https://github.com/user-attachments/assets/7f604d35-73fb-41ff-bdb8-6276fed8b5bc)
+
+The time series of daily total sales from 2014 to 2019 displays strong fluctuations with frequent peaks and troughs, suggesting the presence of both seasonality and irregular variation. Sales levels generally range between 20 and 120 units, with occasional extreme spikes reaching above 150, indicating periods of unusually high demand. The recurring patterns imply cyclical or seasonal effects influencing sales, while the volatility points to external factors such as promotions, holidays, or unexpected events. Overall, the data highlights consistent seasonality combined with irregular bursts of activity, making it suitable for decomposition and forecasting methods that can capture both trend and seasonal dynamics.
+
+- **Decomposition**
+
+We decomposeed the time series in forecasting because it will help us understand and model the underlying structure of the data. Instead of treating the series as one noisy line, decomposition will break it into interpretable parts. We will capture the drivers of the data, reduce noise, and build more accurate and interpretable forecasts.
+```R
+decomposed <- stl(ts_data, s.window = "periodic")
+plot(decomposed)
+```
+
+![decompossed](https://github.com/user-attachments/assets/f89666ea-1674-44ad-a05c-fcc12bddb403)
+
+The classical seasonal-trend decomposition (STL decomposition) of the time series separates the data into three main components: seasonal, trend, and remainder. The seasonal component shows a strong and repeating yearly cycle, with consistent peaks and troughs, indicating stable seasonality throughout 2014–2019. The trend component reveals long-term movements: a steady rise until 2016, a decline through 2017, a recovery in 2018, and a slight downturn toward 2019. The remainder captures short-term fluctuations and irregular events not explained by seasonality or trend. Overall, the decomposition highlights that the series is strongly seasonal with noticeable long-term trend shifts, while most unexplained variation is due to random noise.
+
+## Forcasting
+
