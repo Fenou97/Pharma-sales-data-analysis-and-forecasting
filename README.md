@@ -162,3 +162,63 @@ The classical seasonal-trend decomposition (STL decomposition) of the time serie
 
 ## Forcasting
 
+- **Split data by drug class**
+
+Splitting the data by DrugClass ensures that each drug’s sales patterns are analyzed separately. Different drug classes often have unique demand trends, seasonality, and sales behavior. By treating them independently, we prevent one drug’s pattern from distorting another’s forecast and allow models to better capture each series’ individual characteristics.
+
+```R
+pharma_list <- split(Pharma_long, Pharma_long$DrugClass)
+```
+
+- **ARIMA forecast**
+  ARIMA (AutoRegressive Integrated Moving Average) is a classical time series model that captures trends and autocorrelations in data. We will use this technique to forcast "N05B", "N05C".
+
+```R
+run_arima <- function(df) {
+  ts_data <- ts(df$UnitsSold, frequency = 365, start = c(year(min(df$datum)), yday(min(df$datum))))
+  fit <- auto.arima(ts_data, seasonal = TRUE)
+  forecast(fit, h = 365)
+}
+```
+
+- **Prophet forecast**
+
+Prophet is designed to handle complex seasonality, trends, and holidays. It will be used for for drugs with irregular patterns or multiple seasonal cycles like R06 and N02BE.
+
+```R
+run_prophet <- function(df) {
+  df_prophet <- df %>%
+    select(ds = datum, y = UnitsSold)
+  m <- prophet(df_prophet, yearly.seasonality = TRUE, weekly.seasonality = TRUE)
+  future <- make_future_dataframe(m, periods = 365)
+  predict(m, future)
+}
+```
+
+- **Apply models by group**
+
+Not all drugs behave the same way; some are better modeled with ARIMA, others with Prophet. By grouping drugs based on their characteristics and applying the appropriate model, we maximize predictive accuracy while keeping the workflow organized. 
+
+```R
+arima_drugs <- c("N05B", "N05C")
+arima_forecasts <- lapply(pharma_list[arima_drugs], run_arima)
+
+prophet_drugs <- c("R03", "R06", "N02BE")
+prophet_forecasts <- lapply(pharma_list[prophet_drugs], run_prophet)
+```
+
+- **Visualize the forcast**
+
+Visualizing forecasts will allow stakeholders to see trends, seasonal effects, and uncertainty intervals. ARIMA plots show predicted sales over time with confidence bands, while Prophet component plots reveal underlying trends, yearly and weekly seasonality. These visualizations will make forecasts actionable by clearly communicating patterns, expected peaks, and potential risks.
+
+```R
+autoplot(arima_forecasts$N05B) + ggtitle("ARIMA Forecast - N05B")
+
+prophet_plot_components(
+  prophet(prophet_drugs$R06 %>% select(ds = datum, y = UnitsSold), yearly.seasonality = TRUE, weekly.seasonality = TRUE),
+  prophet_forecasts$R06
+)
+```
+
+
+  
